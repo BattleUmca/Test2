@@ -100,7 +100,7 @@ public class MainActivity extends Activity {
 
     String loadPref()
     {
-        sPref=getPreferences(MODE_PRIVATE); // модификатор
+        sPref=getSharedPreferences("Test2",MODE_PRIVATE); // модификатор
         String barcode_data = sPref.getString(CardCode,""); // получить поле, по значению
         return barcode_data;
     }
@@ -108,8 +108,8 @@ public class MainActivity extends Activity {
 
     void savePerf(String strCatName)
     {
-        sPref=getPreferences(MODE_PRIVATE); // модификатор
-        SharedPreferences.Editor editor=sPref.edit(); //
+        sPref=getSharedPreferences("Test2",MODE_PRIVATE); // модификатор-Константа MODE_PRIVATE используется для настройки доступа и означает, что после сохранения, данные будут видны только этому приложению.
+        SharedPreferences.Editor editor=sPref.edit(); //чтобы редактировать данные, необходим объект Editor – получаем его из sPref
         editor.putString(CardCode,strCatName); // Изменить пол и значение
         editor.commit(); // записать
     }
