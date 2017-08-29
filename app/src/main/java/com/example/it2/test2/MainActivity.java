@@ -44,7 +44,7 @@ public class MainActivity extends Activity {
 
         final ImageView iv=(ImageView) findViewById(R.id.imageView2);
         final EditText tv =(EditText) findViewById(editText);
-        String barcode_data=loadPref();
+        String barcode_data=loadPref(); // загружаем номер карты из файла
 
 
         tv.setOnKeyListener(new View.OnKeyListener() {
@@ -57,8 +57,9 @@ public class MainActivity extends Activity {
                     String strCatName = tv.getText().toString();
                     try {
 
-                        bitmap = SHBC.encodeAsBitmap(strCatName,BarcodeFormat.CODE_128,600,300);
-                        iv.setImageBitmap(bitmap);
+                        bitmap = SHBC.encodeAsBitmap(strCatName,BarcodeFormat.CODE_128,600,300);//код ,формат,размеры штрих кода
+                        iv.setImageBitmap(bitmap);// отображаим штрихкод
+
 
 
                     } catch (WriterException e) {
@@ -79,8 +80,8 @@ public class MainActivity extends Activity {
 
         try {
 
-            bitmap = SHBC.encodeAsBitmap(barcode_data,BarcodeFormat.CODE_128,600,300);
-            iv.setImageBitmap(bitmap);
+            bitmap = SHBC.encodeAsBitmap(barcode_data,BarcodeFormat.CODE_128,600,300); //код ,формат,размеры штрих кода
+            iv.setImageBitmap(bitmap); // отображаим штрихкод
 
         } catch (WriterException e) {
             e.printStackTrace();
