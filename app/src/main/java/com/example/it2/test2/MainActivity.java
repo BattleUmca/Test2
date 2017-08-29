@@ -1,6 +1,7 @@
 package com.example.it2.test2;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.text.TextWatcher;
@@ -23,20 +24,27 @@ import java.util.Map;
 import static com.example.it2.test2.R.id.editText;
 
 public class MainActivity extends Activity {
+
     ShowBarCode SHBC=new ShowBarCode();
     Bitmap bitmap=null;
+    SharedPreferences sPref;
+    String CardCode="BonusNumber";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        final String barcode_data = "1234567890";
+
+
+
+
 
 
         // barcode image
 
         final ImageView iv=(ImageView) findViewById(R.id.imageView2);
         final EditText tv =(EditText) findViewById(editText);
+        String barcode_data=loadPref();
 
 
         tv.setOnKeyListener(new View.OnKeyListener() {
@@ -49,12 +57,16 @@ public class MainActivity extends Activity {
                     String strCatName = tv.getText().toString();
                     try {
 
-                        bitmap = SHBC.encodeAsBitmap(barcode_data,BarcodeFormat.CODE_128,600,300);
+                        bitmap = SHBC.encodeAsBitmap(strCatName,BarcodeFormat.CODE_128,600,300);
                         iv.setImageBitmap(bitmap);
+
 
                     } catch (WriterException e) {
                         e.printStackTrace();
                     }
+                    savePerf(strCatName);
+
+
 
                     return true;
                 }
@@ -68,8 +80,6 @@ public class MainActivity extends Activity {
         try {
 
             bitmap = SHBC.encodeAsBitmap(barcode_data,BarcodeFormat.CODE_128,600,300);
-
-           // bitmap[0] = encodeAsBitmap(barcode_data, BarcodeFormat.CODE_128, 600, 300);
             iv.setImageBitmap(bitmap);
 
         } catch (WriterException e) {
@@ -86,6 +96,24 @@ public class MainActivity extends Activity {
 
 
     }
+
+
+    String loadPref()
+    {
+        sPref=getPreferences(MODE_PRIVATE); // модификатор
+        String barcode_data = sPref.getString(CardCode,""); // получить поле, по значению
+        return barcode_data;
+    }
+
+
+    void savePerf(String strCatName)
+    {
+        sPref=getPreferences(MODE_PRIVATE); // модификатор
+        SharedPreferences.Editor editor=sPref.edit(); //
+        editor.putString(CardCode,strCatName); // Изменить пол и значение
+        editor.commit(); // записать
+    }
+
 
 
 
