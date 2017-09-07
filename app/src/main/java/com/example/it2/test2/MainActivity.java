@@ -1,25 +1,24 @@
 package com.example.it2.test2;
 
+import android.R;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.os.Bundle;
-import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.TextView;
-
+import com.example.it2.test2.barcode.BarcodeCaptureActivity;
+import com.google.android.gms.common.api.CommonStatusCodes;
+import com.google.android.gms.vision.barcode.Barcode;
 import com.google.zxing.BarcodeFormat;
-import com.google.zxing.EncodeHintType;
-import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
-import com.google.zxing.common.BitMatrix;
-
-import java.util.EnumMap;
-import java.util.Map;
 
 import static com.example.it2.test2.R.id.editText;
 
@@ -27,17 +26,25 @@ public class MainActivity extends Activity {
 
     ShowBarCode SHBC=new ShowBarCode();
     Bitmap bitmap=null;
+    EditText tv;
     SharedPreferences sPref;
     String CardCode="BonusNumber";
+    private static final String LOG_TAG = MainActivity.class.getSimpleName();
+    private static final int BARCODE_READER_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
-
-
+        Button scanBarcodeButton = (Button) findViewById(R.id.scanButton);
+        scanBarcodeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), BarcodeCaptureActivity.class);
+                startActivityForResult(intent, BARCODE_READER_REQUEST_CODE);
+            }
+        });
 
 
         // barcode image
@@ -81,7 +88,7 @@ public class MainActivity extends Activity {
         try {
 
             bitmap = SHBC.encodeAsBitmap(barcode_data,BarcodeFormat.CODE_128,600,300); //код ,формат,размеры штрих кода
-            iv.setImageBitmap(bitmap); // отображаим штрихкод
+            iv.setImageBitmap(bitmap); // отображаем штрихкод
 
         } catch (WriterException e) {
             e.printStackTrace();
@@ -114,11 +121,24 @@ public class MainActivity extends Activity {
         editor.putString(CardCode,strCatName); // Изменить пол и значение
         editor.commit(); // записать
     }
-
-
-
-
-
-
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == BARCODE_READER_REQUEST_CODE) {
+            if (resultCode == CommonStatusCodes.SUCCESS) {
+                if (data != null) {
+                    Barcode barcode = data.getParcelableExtra(BarcodeCaptureActivity.BarcodeObject);
+                    Point[] p = barcode.cornerPoints;
+                    tv.setText(barcode.displayValue);
+                } else tv.setText(R.string.no_barcode_captured);
+            } else Log.e(LOG_TAG, String.format(getString(R.string.barcode_error_format),
+                    CommonStatusCodes.getStatusCodeString(resultCode)));
+        } else super.onActivityResult(requestCode, resultCode, data);
+    }
 }
+
+
+
+
+
+
+
 
